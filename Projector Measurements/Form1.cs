@@ -1,16 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.IO.Ports;
-using System.Timers;
-
 
 namespace Projector_Measurements
 {
@@ -19,20 +8,18 @@ namespace Projector_Measurements
         MinoltaRig minolta = new MinoltaRig();
         bool isConnected = false;
 
+        double compensationFactor = 1.05;
+        double[] multipliers = { 1/10000, 1/1000, 1/100, 1/10, 1,
+                10, 100, 10000, 100000, 1000000 };
 
         double Wuxga = 4.56;
         double[] ninePoint = new double[9] { 699, 663, 668, 513, 595, 559, 673, 529, 541 };
         string[] lxData = new string[9] { "+ 3485", "+23455", "+54365", "+23435", "+   55", "+   65", "+ 6545", "+45655", "+  235" };
 
-
-
         public Form1()
         {
             InitializeComponent();
             ComboBoxComms.Items.AddRange(minolta.comms);
-
-
-
         }
         #region get lumens button click
 
@@ -52,9 +39,7 @@ namespace Projector_Measurements
             BottomRight.Text = Convert.ToString(ninePoint[8]);
 
             LumensRead.Text = reading;
-
         }
-
         #endregion
 
         #region Serial connect button click
@@ -72,18 +57,13 @@ namespace Projector_Measurements
             if (Complete)
             {
                 label1.Text = "Connected";
-
             }
-        }
-    
-
+        }  
     #endregion
 
-        public static double[] ProcessData(string[] data)
+        public double[] ProcessData(string[] data)
         {
-            double compensationFactor = 1.05;
-            double[] multipliers = { Math.Pow(10,-4), Math.Pow(10, -3), Math.Pow(10, -2), Math.Pow(10, -1), Math.Pow(10, 0),
-                Math.Pow(10, 1), Math.Pow(10, 2), Math.Pow(10, 3), Math.Pow(10, 4), Math.Pow(10, 5) };
+            
             double[] processed = new double[9];
             int multiplierIndex = int.Parse(data[0][data[0].Length-1].ToString());
             
@@ -112,11 +92,7 @@ namespace Projector_Measurements
             }
 
             return processed;
-
-
-
-        }
-            
+        }         
         
     }
 

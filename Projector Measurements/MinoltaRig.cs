@@ -1,9 +1,6 @@
 ﻿using System;
 using System.IO.Ports;
 using System.Threading;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Projector_Measurements
@@ -12,6 +9,7 @@ namespace Projector_Measurements
     {
         SerialPort port;
         public string[] comms = SerialPort.GetPortNames();
+
         private char[] receptor = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
         private char[] command54 = { '5', '4', '1', ' ', ' ', ' ' };
         private char[] command55 = { '5', '5', '0', ' ', ' ', '1' };
@@ -19,10 +17,9 @@ namespace Projector_Measurements
 
         public bool Initialise(string CommPort)
         {
-
-
             byte[] bytestosend = sendCommand(command54, receptor[0], receptor[0]);
             bool isConnected = false;
+
             try
             {
                 port = new SerialPort(CommPort, 9600, Parity.Even, 7, StopBits.One);
@@ -33,10 +30,7 @@ namespace Projector_Measurements
                 if (port.ReadLine().Contains("0054"))
                 {
                     isConnected = true;
-
-                }
-                
-
+                }              
             }
             catch (Exception)
             {
@@ -65,7 +59,7 @@ namespace Projector_Measurements
             });
             while (!isComplete)
             {
-                
+                // Do Nothing 
             }
             isComplete = true;
             Console.WriteLine(isComplete);
@@ -90,11 +84,10 @@ namespace Projector_Measurements
             });
             while (isRunning)
             {
-                
+                //Do Nothing
             }
 
             return lxData;
-
         }
 
         #region Creating command to send to the Minolta
@@ -113,9 +106,7 @@ namespace Projector_Measurements
             var array = s.Split();
 
             return s.ToCharArray();
-        }
-
-        
+        }      
 
         private byte[] sendCommand(char[] command, char rec10, char rec1)
         {
@@ -126,9 +117,8 @@ namespace Projector_Measurements
             byte ETX = 0x03;
             byte CR = 0x0D;
             byte LF = 0x0A;
-
             
-            byte[] commandByte = toByte(command);
+            byte[] commandByte = toByteArray(command);
 
             // build complete command
             byte[] complete = { STX, toByte(rec10), toByte(rec1), 0, 0, 0, 0, 0, 0, ETX,
@@ -136,15 +126,13 @@ namespace Projector_Measurements
 
             for (int i = 0; i < commandByte.Length; i++)
             {
-
                 complete[i + 3] = commandByte[i];
-
             }
 
             return complete;
         }
 
-        private byte[] toByte(char[] sArray)
+        private byte[] toByteArray(char[] sArray)
         {
             byte[] bArray = new byte[sArray.Length];
             
@@ -157,7 +145,6 @@ namespace Projector_Measurements
 
         private byte toByte(char c)
         {
-
             return (byte)c;
         }
 
