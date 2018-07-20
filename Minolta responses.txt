@@ -1,0 +1,2 @@
+Response from Initaisation: 0054    02
+data from receptor 01: 01100 10+12692      07
