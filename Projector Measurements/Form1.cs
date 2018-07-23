@@ -9,7 +9,7 @@ namespace Projector_Measurements
         bool isConnected = false;
 
         double compensationFactor = 1.05;
-        double[] multipliers = { 1/10000, 1/1000, 1/100, 1/10, 1,
+        double[] multipliers = { 0.00001, 0.0001, 0.001 ,0.1, 1,
                 10, 100, 10000, 100000, 1000000 };
 
         double Wuxga = 4.56;
@@ -49,51 +49,76 @@ namespace Projector_Measurements
             bool Complete = false;
             label1.Text = "Connecting...";
             isConnected = minolta.Initialise((string)ComboBoxComms.SelectedItem);
-            
+
             if (isConnected)
             {
                 Complete = minolta.Start();
+            }
+            else
+            {
+                label1.Text = "No Connection Established";
             }
             if (Complete)
             {
                 label1.Text = "Connected";
             }
-        }  
-    #endregion
+        }
+        #endregion
 
-        public double[] ProcessData(string[] data)
+        private double[] ProcessData(string[] data)
         {
+            double multiplier = GetMultiplier(data);
+            double[] converted = ConvertToNumber(data);
             
-            double[] processed = new double[9];
-            int multiplierIndex = int.Parse(data[0][data[0].Length-1].ToString());
-            
-            for (int i = 0; i < data.Length; i++)
+            double[] processed = ApplyMultiplier(converted, multiplier);
+
+            return processed;
+        }
+
+        private double[] ConvertToNumber(string[] dataArray)
+        {
+            double[] converted = new double[dataArray.Length];
+
+            for (int i = 0; i < dataArray.Length; i++)
             {
-                string s = data[i];
+                string s = dataArray[i];
                 if (s.StartsWith("+"))
                 {
-                    data[i] = s.Substring(1,4);
-                    data[i] = data[i].Trim();
-                    processed[i] = double.Parse(data[i]);
+                    dataArray[i] = s.Substring(1, 4);
+                    dataArray[i] = dataArray[i].Trim();
+                    converted[i] = double.Parse(dataArray[i]);
 
                 }
                 else if (s.StartsWith("-"))
                 {
-                    data[i] = s.Substring(1,4);
-                    data[i] = data[i].Trim();
-                    processed[i] = double.Parse(data[i]);
-                }                        
-               
+                    dataArray[i] = s.Substring(1, 4);
+                    dataArray[i] = dataArray[i].Trim();
+                    converted[i] = double.Parse(dataArray[i]);
+                }
             }
 
-            foreach (double point in processed)
+            return converted;
+        }
+
+        private double GetMultiplier(string[] data)
+        {
+            string FirstString = data[0];
+            int index = int.Parse(FirstString[FirstString.Length-1].ToString());
+            
+            return multipliers[index];
+        }
+
+        private double[] ApplyMultiplier(double[]data, double multiplier)
+        {
+            double[] applied = new double[data.Length];
+
+            foreach (double number in data)
             {
-                processed[Array.IndexOf(processed, point)] = (point * multipliers[multiplierIndex])* compensationFactor;
+                applied[Array.IndexOf(data, number)] = (number * multiplier) * compensationFactor;
             }
+            return applied;
+        }
 
-            return processed;
-        }         
-        
     }
 
   

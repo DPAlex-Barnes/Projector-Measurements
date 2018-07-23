@@ -10,16 +10,33 @@ namespace Projector_Measurements
         SerialPort port;
         public string[] comms = SerialPort.GetPortNames();
 
+        private const byte STX = 0x02;
+        private const byte ETX = 0x03;
+        private const byte CR = 0x0D;
+        private const byte LF = 0x0A;
+
         private char[] receptor = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
         private char[] command54 = { '5', '4', '1', ' ', ' ', ' ' };
         private char[] command55 = { '5', '5', '0', ' ', ' ', '1' };
         private char[] command10 = { '1', '0', '0', '2', '0', '1' };
 
+        private string[] lxData = new string[9];
+        private bool isConnected = false;
+
+        /// <summary>
+        /// Creates connection to Minolta
+        /// </summary>
+        /// <param name="CommPort">
+        /// the comm port to connect
+        /// </param>
+        /// <returns>
+        /// a true of false if a connection is established
+        /// </returns>
+
         public bool Initialise(string CommPort)
         {
             byte[] bytestosend = sendCommand(command54, receptor[0], receptor[0]);
-            bool isConnected = false;
-
+            
             try
             {
                 port = new SerialPort(CommPort, 9600, Parity.Even, 7, StopBits.One);
@@ -69,15 +86,23 @@ namespace Projector_Measurements
         public string[] Read()
         {
             bool isRunning = true;
-            string[] lxData = new string[9];
+            
             var read = Task.Run(() =>
             {
                 for (int i = 0; i < 9; i++)
                 {
-                    port.Write(sendCommand(command10, receptor[0], receptor[i + 1]), 0, 14);
-                    Console.WriteLine("Result:" + receptor[i + 1] + " " + port.ReadLine());
-                    lxData[i] = port.ReadLine().Substring(9, 6);
-                    Thread.Sleep(80);
+                    try
+                    {
+                        port.Write(sendCommand(command10, receptor[0], receptor[i + 1]), 0, 14);
+                        lxData[i] = port.ReadLine().Substring(9, 6);
+                        Console.WriteLine(lxData[i]);
+                        Thread.Sleep(80);
+                    }
+                    catch (Exception)
+                    {
+                        
+                    }
+                    
                 }
                 Thread.Sleep(5000);
                 isRunning = false;                           
@@ -91,7 +116,25 @@ namespace Projector_Measurements
         }
 
         #region Creating command to send to the Minolta
-        private char[] Bcc(char[] command, char rec10, char rec1)
+
+        private byte[] sendCommand(char[] command, char rec10, char rec1)
+        {
+            char[] bcc = CalcBcc(command, rec10, rec1);
+            byte[] commandByte = toByteArray(command);
+
+            // build complete command
+            byte[] complete = { STX, (byte)rec10, (byte)rec1, 0, 0, 0, 0, 0, 0, ETX,
+                (byte)bcc[0], (byte)bcc[1], CR, LF};
+
+            for (int i = 0; i < commandByte.Length; i++)
+            {
+                complete[i + 3] = commandByte[i];
+            }
+
+            return complete;
+        }
+
+        private char[] CalcBcc(char[] command, char rec10, char rec1)
         {
 
             int bcc = rec10;
@@ -108,30 +151,6 @@ namespace Projector_Measurements
             return s.ToCharArray();
         }      
 
-        private byte[] sendCommand(char[] command, char rec10, char rec1)
-        {
-            char[] bcc = Bcc(command, rec10, rec1);
-
-            // Command Constants
-            byte STX = 0x02;
-            byte ETX = 0x03;
-            byte CR = 0x0D;
-            byte LF = 0x0A;
-            
-            byte[] commandByte = toByteArray(command);
-
-            // build complete command
-            byte[] complete = { STX, toByte(rec10), toByte(rec1), 0, 0, 0, 0, 0, 0, ETX,
-                (byte)bcc[0], (byte)bcc[1], CR, LF};
-
-            for (int i = 0; i < commandByte.Length; i++)
-            {
-                complete[i + 3] = commandByte[i];
-            }
-
-            return complete;
-        }
-
         private byte[] toByteArray(char[] sArray)
         {
             byte[] bArray = new byte[sArray.Length];
@@ -141,11 +160,6 @@ namespace Projector_Measurements
                 bArray[i] = (byte)sArray[i];
             }
             return bArray;
-        }
-
-        private byte toByte(char c)
-        {
-            return (byte)c;
         }
 
         #endregion
