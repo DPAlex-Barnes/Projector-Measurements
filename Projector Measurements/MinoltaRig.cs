@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Projector_Measurements
 {
-    class MinoltaRig
+    public class MinoltaRig
     {
         SerialPort port;
         public string[] comms = SerialPort.GetPortNames();
@@ -20,19 +20,19 @@ namespace Projector_Measurements
         private char[] command55 = { '5', '5', '0', ' ', ' ', '1' };
         private char[] command10 = { '1', '0', '0', '2', '0', '1' };
 
-        private string[] lxData = new string[9];
+        private string[] ninePointLuxData = new string[9];
+        private string[] cornerLuxData = new string[4];
         private bool isConnected = false;
 
         /// <summary>
-        /// Creates connection to Minolta
+        /// Initialise connection to Minolta
         /// </summary>
         /// <param name="CommPort">
-        /// the comm port to connect
+        /// the comm port connected to Minolta
         /// </param>
         /// <returns>
-        /// a true of false if a connection is established
+        /// a true or false if a connection is established
         /// </returns>
-
         public bool Initialise(string CommPort)
         {
             byte[] bytestosend = sendCommand(command54, receptor[0], receptor[0]);
@@ -60,7 +60,7 @@ namespace Projector_Measurements
         public bool Start()
         {
             bool isComplete = false;
-            var set = Task.Run(() =>
+            var t = Task.Run(() =>
             {
                 port.Write(sendCommand(command55, receptor[9], receptor[9]), 0, 14);
                 Thread.Sleep(80);
@@ -68,34 +68,38 @@ namespace Projector_Measurements
                 for (int i = 1; i <= 9; i++)
                 {
                     port.Write(sendCommand(command10, receptor[0], receptor[i]), 0, 14);
-                    Thread.Sleep(80);
-                    
+                    Thread.Sleep(80);     
                 }
+
+                for (int i = 0; i < 4; i++)
+                {
+                    port.Write(sendCommand(command10, receptor[1], receptor[i]), 0, 14);
+                    Thread.Sleep(80);
+                }
+                
                 Thread.Sleep(5000);
-                isComplete = true;
+                
             });
-            while (!isComplete)
-            {
-                // Do Nothing 
-            }
-            isComplete = true;
-            Console.WriteLine(isComplete);
+            t.Wait();
+            isComplete = t.IsCompleted;
             return isComplete;
         }
 
-        public string[] Read()
+        public string[] ReadNine()
         {
             bool isRunning = true;
             
-            var read = Task.Run(() =>
+            var t = Task.Run(() =>
             {
-                for (int i = 0; i < 9; i++)
+                Thread.Sleep(600);
+                for (int i = 1; i <= 9; i++)
                 {
                     try
                     {
-                        port.Write(sendCommand(command10, receptor[0], receptor[i + 1]), 0, 14);
-                        lxData[i] = port.ReadLine().Substring(9, 6);
-                        Console.WriteLine(lxData[i]);
+                        
+                        port.Write(sendCommand(command10, receptor[0], receptor[i]), 0, 14);
+                        ninePointLuxData[i-1] = port.ReadLine().Substring(9, 6);
+                        Console.WriteLine(ninePointLuxData[i]);
                         Thread.Sleep(80);
                     }
                     catch (Exception)
@@ -104,15 +108,44 @@ namespace Projector_Measurements
                     }
                     
                 }
-                Thread.Sleep(5000);
+                
                 isRunning = false;                           
             });
-            while (isRunning)
-            {
-                //Do Nothing
-            }
 
-            return lxData;
+            t.Wait();
+            isRunning = t.IsCompleted;
+
+            return ninePointLuxData;
+        }
+
+        public string[] ReadCorners()
+        {
+            bool isRunning = true;
+
+            var t = Task.Run(() =>
+            {
+                Thread.Sleep(600);
+                for (int i = 0; i < 4; i++)
+                {
+                    try
+                    {                        
+                        port.Write(sendCommand(command10, receptor[1], receptor[i]), 0, 14);
+                        cornerLuxData[i] = port.ReadLine().Substring(9, 6);
+                        Thread.Sleep(80);
+                    }
+                    catch (Exception)
+                    {
+                        
+                    }
+
+                }
+                
+                
+            });
+
+            t.Wait();
+            isRunning = t.IsCompleted;
+            return cornerLuxData;
         }
 
         #region Creating command to send to the Minolta

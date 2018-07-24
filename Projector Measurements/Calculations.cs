@@ -8,13 +8,13 @@ namespace Projector_Measurements
 {
     class Calculations
     {
-        public static double Lumens(double[] reading, double area)
+        public static double area { get; set; }
+
+        public static double Lumens(double[] WhiteData)
         {
-            double mean = reading.Average();
+            double mean = WhiteData.Average();
             int lumens = Convert.ToInt32(mean * area);
             return lumens;
-        }
-
-        
+        }     
     }
 }
