@@ -99,7 +99,6 @@ namespace Projector_Measurements
                         
                         port.Write(sendCommand(command10, receptor[0], receptor[i]), 0, 14);
                         ninePointLuxData[i-1] = port.ReadLine().Substring(9, 6);
-                        Console.WriteLine(ninePointLuxData[i]);
                         Thread.Sleep(80);
                     }
                     catch (Exception)

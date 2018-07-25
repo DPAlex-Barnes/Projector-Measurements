@@ -10,10 +10,11 @@ namespace Projector_Measurements
     {
         public static double area { get; set; }
 
-        public static double Lumens(double[] WhiteData)
+        public static double AnsiLumens(double[] WhiteData)
         {
+            
             double mean = WhiteData.Average();
-            int lumens = Convert.ToInt32(mean * area);
+            double lumens = mean * area;
             return lumens;
         }     
     }

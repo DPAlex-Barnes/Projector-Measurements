@@ -11,7 +11,7 @@ namespace Projector_Measurements
     {
         public static double compensationFactor { get; set; }
         
-        private static double[] multipliers = { 0.00001, 0.0001, 0.001 ,0.1, 1,
+        private static double[] multipliers = { 0.0001, 0.001, 0.01 ,0.1, 1,
                 10, 100, 10000, 100000, 1000000 };
 
         public static string[] ConcatArrays(string[]NinePoint, string[]corners)
@@ -20,10 +20,7 @@ namespace Projector_Measurements
             fullArray.AddRange(NinePoint);
             fullArray.AddRange(corners);
             string[] sArray = fullArray.ToArray();
-            foreach (string s in sArray)
-            {
-                Console.WriteLine(s);
-            }
+            
             return fullArray.ToArray();
         }
 
@@ -64,7 +61,6 @@ namespace Projector_Measurements
         private static double GetMultiplier(string[] data)
         {
             string FirstString = data[0];
-            Console.WriteLine(FirstString);
             int index = int.Parse(FirstString[FirstString.Length - 1].ToString());
             
             return multipliers[index];

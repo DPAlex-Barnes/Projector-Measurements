@@ -11,38 +11,44 @@ namespace Projector_Measurements
         bool isConnected = false;
         string[] ninePoint = new string[9];
         string[] corners = new string[4];
-        double[] data = new double[13];
-        bool isRunning = false;
+        string[] ThirteenPoint = new string[13];
+        
+        double[] data;
+        double[] cornerdata;
 
+        double ansiLumens;
+        bool isRunning = false;
+        
         public MainForm()
         {
             InitializeComponent();
             ComboBoxComms.Items.AddRange(minolta.comms);
             Processing.compensationFactor = 1.05;
-            Calculations.area = 4.56;
+            
 
         }
         #region get lumens button click
 
-        private void button1_Click(object sender, EventArgs e)
+        private void StartButton_Click(object sender, EventArgs e)
         {
+            Calculations.area = SetResAreaDisplay(resolutionComboBox.SelectedItem.ToString());
             isRunning = true;
-            var t = Task.Run(() =>
+            var t = Task.Run((Action)(() =>
             {
                 while (isRunning)
                 {
                     ninePoint = minolta.ReadNine();
                     corners = minolta.ReadCorners();
-                    string[] ThirteenPoint = Processing.ConcatArrays(ninePoint, corners);
-                    data = Processing.ProcessData(ThirteenPoint);
-                    double reading = Calculations.Lumens(data);
+                    data = Processing.ProcessData(ninePoint);
+                    cornerdata = Processing.ProcessData(corners);
+                    ansiLumens = Calculations.AnsiLumens(data);
                     Thread.Sleep(80);
                     Invoke(new Action(() =>
                         {
-                            DisplayReading(data, reading);
+                            DisplayReading(data, cornerdata, ansiLumens);
                         }));
                 }
-            });
+            }));
         }
 
         
@@ -61,6 +67,7 @@ namespace Projector_Measurements
             if (isConnected)
             {
                 StartUpComplete = minolta.Start();
+                BtnConnect.Enabled = false;
             }
             else
             {
@@ -76,27 +83,32 @@ namespace Projector_Measurements
             }
         }
 
+        private void button2_Click(object sender, EventArgs e)
+        {
+            isRunning = false;
+        }
+
 
         #endregion
-        private string DisplayReading(double[] data, double reading) {
+        private string DisplayReading(double[] npData, double[] cData, double reading) {
             string round = "#.00";
-            TopLeft.Text = this.data[0].ToString(round);
-            Top.Text = this.data[1].ToString("#.000");
-            TopRight.Text = this.data[2].ToString("#.000");
-            Left.Text = this.data[3].ToString("#.000");
-            Centre.Text = this.data[4].ToString("#.000");
-            Right.Text = this.data[5].ToString("#.000");
-            BottomLeft.Text = this.data[6].ToString("#.000");
-            Bottom.Text = this.data[7].ToString("#.000");
-            BottomRight.Text = this.data[8].ToString("#.000");
-            TLCorner.Text = this.data[9].ToString("#.000");
-            TRCorner.Text = this.data[10].ToString("#.000");
-            BLCorner.Text = this.data[11].ToString("#.000");
-            BRCorner.Text = this.data[12].ToString("#.000");
+            TopLeft.Text = npData[0].ToString(round);
+            Top.Text = npData[1].ToString(round);
+            TopRight.Text = npData[2].ToString(round);
+            Left.Text = npData[3].ToString(round);
+            Centre.Text = npData[4].ToString(round);
+            Right.Text = npData[5].ToString(round);
+            BottomLeft.Text = npData[6].ToString(round);
+            Bottom.Text = npData[7].ToString(round);
+            BottomRight.Text = npData[8].ToString(round);
+            TLCorner.Text = cData[0].ToString();
+            TRCorner.Text = cData[1].ToString();
+            BLCorner.Text = cData[2].ToString();
+            BRCorner.Text = cData[3].ToString();
 
-            if (reading < 1000)
+            if (reading > 1000)
             {
-                return LumensRead.Text = reading.ToString();
+                return LumensRead.Text = reading.ToString("#");
             }
             else
             {
@@ -104,10 +116,28 @@ namespace Projector_Measurements
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private double SetResAreaDisplay(string res)
         {
-            isRunning = false;
+            if (res.Equals("DC2K"))
+                {
+                return 3.84;
+                }
+            else if (res.Equals("WUXGA"))
+            {
+                return 4.54;
+            }
+            else if (res.Equals("1080p"))
+            {
+                return 4.10;
+            }
+            else
+            {
+                return 0;
+            }
         }
+        
+
+        
     }
 
   
