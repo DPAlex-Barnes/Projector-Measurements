@@ -12,7 +12,8 @@
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <PublishUrl>publish\</PublishUrl>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>I:\Production Engineering\Alex Barnes\Published\Projector Measurements\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -22,10 +23,10 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationRevision>3</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -53,6 +54,21 @@
   <PropertyGroup>
     <ApplicationIcon>idea.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>E7AC7748F1A3B3566089BF5DB5B95DE326D70DFB</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>Projector Measurements_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NoWin32Manifest>true</NoWin32Manifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -68,18 +84,62 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Calculations.cs" />
+    <Compile Include="DataCentreClass.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="MeasurementsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MeasurementsForm.Designer.cs">
+      <DependentUpon>MeasurementsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MinoltaRig.cs" />
+    <Compile Include="PleaseWaitForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PleaseWaitForm.Designer.cs">
+      <DependentUpon>PleaseWaitForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PrintDataForm.cs" />
+    <Compile Include="PrintForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PrintForm.Designer.cs">
+      <DependentUpon>PrintForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Processing.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Projector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CSVSave.cs" />
+    <Compile Include="SelectprojectorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SelectprojectorForm.Designer.cs">
+      <DependentUpon>SelectprojectorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SQLSaveData.cs" />
+    <Compile Include="UserSettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserSettingsForm.Designer.cs">
+      <DependentUpon>UserSettingsForm.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MeasurementsForm.resx">
+      <DependentUpon>MeasurementsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PleaseWaitForm.resx">
+      <DependentUpon>PleaseWaitForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PrintForm.resx">
+      <DependentUpon>PrintForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -90,6 +150,15 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="SelectprojectorForm.resx">
+      <DependentUpon>SelectprojectorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserSettingsForm.resx">
+      <DependentUpon>UserSettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="CalculationTesterClass.cs" />
+    <None Include="ClassDiagram1.cd" />
+    <None Include="Projector Measurements_TemporaryKey.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -101,7 +170,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="idea.ico" />

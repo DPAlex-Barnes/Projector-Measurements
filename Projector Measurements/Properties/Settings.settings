@@ -2,11 +2,29 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Projector_Measurements.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="CommPort" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">COM3</Value>
+    <Setting Name="MinoltaComms" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="Area" Type="System.String" Scope="Application">
+    <Setting Name="Area" Type="System.String" Scope="User">
       <Value Profile="(Default)">WUXGA</Value>
+    </Setting>
+    <Setting Name="CompensationFactor" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">1.05</Value>
+    </Setting>
+    <Setting Name="CSVPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ScreenWidth" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="ResolutionIndex" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">2</Value>
+    </Setting>
+    <Setting Name="ProjectorComms" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ProjectorType" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>
